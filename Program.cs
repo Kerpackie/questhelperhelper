@@ -66,19 +66,7 @@ namespace questhelperhelper
                 await Task.Delay(-1);
             }
         }
-
-        private Task LogAsync(LogMessage log)
-        {
-            Console.WriteLine(log.ToString());
-            return Task.CompletedTask;
-        }
-
-        private Task ReadyAsync()
-        {
-            Console.WriteLine($"Connected as -> [{_client.CurrentUser}] :)");
-            return Task.CompletedTask;
-        }
-
+        
         private ServiceProvider ConfigureServices()
         {
             var services = new ServiceCollection()
