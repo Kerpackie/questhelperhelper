@@ -16,7 +16,6 @@ namespace questhelperhelper
 {
     class Program
     {
-        // setup our fields we assign later
         private readonly IConfiguration _config;
         private DiscordSocketClient _client;
         private static string _logLevel;
@@ -48,7 +47,7 @@ namespace questhelperhelper
 
         public async Task MainAsync()
         {
-            // call ConfigureServices to create the ServiceCollection/Provider for passing around the services
+
             using (var services = ConfigureServices())
             {
                 // get the client and assign to client 
@@ -59,11 +58,9 @@ namespace questhelperhelper
                 // setup logging and the ready event
                 services.GetRequiredService<LoggingService>();
 
-                // this is where we get the Token value from the configuration file, and start the bot
                 await client.LoginAsync(TokenType.Bot, _config["Token"]);
                 await client.StartAsync();
 
-                // we get the CommandHandler class here and call the InitializeAsync method to start things up for the CommandHandler service
                 await services.GetRequiredService<CommandHandler>().InitializeAsync();
 
                 await Task.Delay(-1);
@@ -126,7 +123,6 @@ namespace questhelperhelper
 
             var serviceProvider = services.BuildServiceProvider();
             return serviceProvider;
-        }
-        
+        }  
     }
 }

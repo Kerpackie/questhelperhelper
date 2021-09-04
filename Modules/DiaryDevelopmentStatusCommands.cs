@@ -120,7 +120,7 @@ namespace questhelperhelper.Modules
             }
             else 
             {
-                // add diary/color to table
+                // add diary/status to table
                 await _db.AddAsync(new DiaryDevelopmentStatus
                     {
                         DiaryName  = diary,
