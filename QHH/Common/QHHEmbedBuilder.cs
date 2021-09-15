@@ -1,12 +1,11 @@
-﻿using Discord;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace QHH.Common
+﻿namespace QHH.Common
 {
+    using System;
+    using Discord;
+
+    /// <summary>
+    /// Custom version of <see cref="EmbedBuilder"/> to include styles.
+    /// </summary>
     public class QHHEmbedBuilder
     {
         private string title;
@@ -15,6 +14,9 @@ namespace QHH.Common
         private string image;
         private EmbedStyle style;
 
+        /// <summary>
+        /// Gets or sets the title of the embed.
+        /// </summary>
         public string Title
         {
             get => this.Title;
@@ -29,6 +31,9 @@ namespace QHH.Common
             }
         }
 
+        /// <summary>
+        /// Gets or sets the description of the embed.
+        /// </summary>
         public string Description
         {
             get => this.description;
@@ -36,19 +41,22 @@ namespace QHH.Common
             {
                 if (value?.Length > 2048)
                 {
-                    throw new ArgumentException(message: $"Description length must be less than or qeual to 2048.", paramName: nameof(this.Description));
+                    throw new ArgumentException(message: $"Description length must be less than or equal to 2048.", paramName: nameof(this.Description));
                 }
 
                 this.description = value;
             }
         }
 
+        /// <summary>
+        /// Gets or sets the footer of the embed.
+        /// </summary>
         public string Footer
         {
             get => this.footer;
             set
             {
-                if(value?.Length > 2048)
+                if (value?.Length > 2048)
                 {
                     throw new ArgumentException(message: $"Footer length must be less than or equal to 2048.", paramName: nameof(this.Footer));
                 }
@@ -56,6 +64,10 @@ namespace QHH.Common
                 this.footer = value;
             }
         }
+
+        /// <summary>
+        /// Gets or sets and image if it is included in the embed.
+        /// </summary>
         public string Image
         {
             get => this.Image;
@@ -70,6 +82,9 @@ namespace QHH.Common
             }
         }
 
+        /// <summary>
+        /// Gets or sets the <see cref="EmbedStyle"/> of the embed.
+        /// </summary>
         public EmbedStyle Style
         {
             get => this.style;
@@ -79,36 +94,65 @@ namespace QHH.Common
             }
         }
 
+        /// <summary>
+        /// Attach the title to the embed.
+        /// </summary>
+        /// <param name="title">The title of the embed.</param>
+        /// <returns>A <see cref="QHHEmbedBuilder"/> with an attached title.</returns>
         public QHHEmbedBuilder WithTitle(string title)
         {
             this.Title = title;
             return this;
         }
 
+        /// <summary>
+        /// Attach the description to the embed.
+        /// </summary>
+        /// <param name="description">The description of the embed.</param>
+        /// <returns>A <see cref="QHHEmbedBuilder"/> with an attached description.</returns>
         public QHHEmbedBuilder WithDescription(string description)
         {
             this.Description = description;
             return this;
         }
 
+        /// <summary>
+        /// Attach a footer to the embed.
+        /// </summary>
+        /// <param name="footer">The footer of the embed.</param>
+        /// <returns>A <see cref="QHHEmbedBuilder"/> with an attached footer.</returns>
         public QHHEmbedBuilder WithFooter(string footer)
         {
             this.Footer = footer;
             return this;
         }
 
+        /// <summary>
+        /// Attach an image to the embed.
+        /// </summary>
+        /// <param name="image">The image attached to the embed.</param>
+        /// <returns>A <see cref="QHHEmbedBuilder"/> with an attached image.</returns>
         public QHHEmbedBuilder WithImage(string image)
         {
             this.Image = image;
             return this;
         }
 
+        /// <summary>
+        /// Attach an <see cref="EmbedStyle"/> to the embed.
+        /// </summary>
+        /// <param name="style">The <see cref="EmbedStyle"/> of the embed.</param>
+        /// <returns>A <see cref="QHHEmbedBuilder"/> with an attached <see cref="EmbedStyle"/>.</returns>
         public QHHEmbedBuilder WithStyle(EmbedStyle style)
         {
             this.Style = style;
             return this;
         }
 
+        /// <summary>
+        /// Builds the <see cref="QHHEmbedBuilder"/>.
+        /// </summary>
+        /// <returns>The <see cref="Embed"/> with all attached properties.</returns>
         public Embed Build()
         {
             EmbedBuilder builder = new EmbedBuilder()

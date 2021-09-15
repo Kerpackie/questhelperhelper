@@ -1,17 +1,22 @@
-﻿using Discord;
-using Discord.WebSocket;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace QHH.Common
+﻿namespace QHH.Common
 {
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Discord;
+    using Discord.WebSocket;
+    using Microsoft.Extensions.Configuration;
+
+    /// <summary>
+    /// Extension methods used throughout QHH.
+    /// </summary>
     public static class Extensions
     {
+        /// <summary>
+        /// Ensure a user is promoted or has administrator permissions.
+        /// </summary>
+        /// <param name="socketUser">The <see cref="SocketUser"/> to be checked.</param>
+        /// <returns>A bool indicating whether or not to return.</returns>
         public static bool IsPromoted(this SocketUser socketUser)
         {
             if (socketUser is not SocketGuildUser socketGuildUser)
@@ -45,40 +50,13 @@ namespace QHH.Common
             }
         }
 
-        public static async Task<IMessage> SendSuccessAsync(this ISocketMessageChannel channel, string title, string description)
-        {
-            var embed = new EmbedBuilder()
-                .WithColor(new Color(43, 182, 115))
-                .WithDescription(description)
-                .WithAuthor(author =>
-                {
-                    author
-                    .WithIconUrl("")
-                    .WithName(title);
-                })
-                .Build();
-
-            var message = await channel.SendMessageAsync(embed: embed);
-            return message;
-        }
-
-        public static async Task<IMessage> SendErrorAsync(this ISocketMessageChannel channel, string title, string description)
-        {
-            var embed = new EmbedBuilder()
-                .WithColor(new Color(43, 182, 115))
-                .WithDescription(description)
-                .WithAuthor(author =>
-                {
-                    author
-                    .WithIconUrl("")
-                    .WithName(title);
-                })
-                .Build();
-
-            var message = await channel.SendMessageAsync(embed: embed);
-            return message;
-        }
-
+        /// <summary>
+        /// Send a log of a command and its action to a channel.
+        /// </summary>
+        /// <param name="channel">Channel for  the log message to be sent to.</param>
+        /// <param name="title">Title of the log message.</param>
+        /// <param name="description">Description of the log message.</param>
+        /// <returns></returns>
         public static async Task<IMessage> SendLogAsync(this ITextChannel channel, string title, string description)
         {
             var embed = new EmbedBuilder()
@@ -87,7 +65,7 @@ namespace QHH.Common
                 .WithAuthor(author =>
                 {
                     author
-                    .WithIconUrl("https://i.imgur.com/gLR4k7d.png")
+                    .WithIconUrl(Icons.Error)
                     .WithName(title);
                 })
                 .Build();

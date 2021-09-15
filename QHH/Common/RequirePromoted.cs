@@ -1,17 +1,25 @@
-﻿using Discord.Commands;
-using Discord.WebSocket;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace QHH.Common
+﻿namespace QHH.Common
 {
-    class RequirePromoted : PreconditionAttribute
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Discord.Commands;
+    using Discord.WebSocket;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+
+    /// <summary>
+    /// Attribute used to ensure the user is promoted (a Contributor or higher).
+    /// </summary>
+    public class RequirePromoted : PreconditionAttribute
     {
+        /// <summary>
+        /// Checks if the attribute will pass or fail.
+        /// </summary>
+        /// <param name="context">The underlying context.</param>
+        /// <param name="command">The command that this attribute was placed on.</param>
+        /// <param name="services">The services inside our service pool.</param>
+        /// <returns>Returns if a user is authorized to manage tags.</returns>
         public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
         {
             if (context.User is SocketGuildUser user)
@@ -33,7 +41,7 @@ namespace QHH.Common
             }
             else
             {
-                return Task.FromResult(PreconditionResult.FromError("Command was run outide of a guild.")); //Shouldn't ever be called.
+                return Task.FromResult(PreconditionResult.FromError("Command was run outide of a guild.")); // Shouldn't ever be called.
             }
         }
     }
