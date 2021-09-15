@@ -14,26 +14,8 @@
         public DiaryEmbedBuilder()
         {
             this.WithTitle("Achievement Diary Development Status");
-            this.WithColor(new Color(238, 62, 75));
-            this.WithFooter("Quest Helper is only officially supported via runelite. Support will not be provided for any other third party clients using Quest Helper. This project is developed 100% by volunteers. Continiously asking for updates and ETAs, may result in a mute or a suspension from the server!");
-        }
-    }
-
-    internal class AddDiaryEmbedBuilder : EmbedBuilder
-    {
-        public AddDiaryEmbedBuilder()
-        {
-            this.WithTitle("Achievement Diary Status Control");
-            this.WithColor(new Color(238, 62, 75));
-        }
-    }
-
-    internal class ErrorEmbedBuilder : EmbedBuilder
-    {
-        public ErrorEmbedBuilder()
-        {
-            this.WithTitle("ERROR!");
-            this.WithColor(new Color(238, 62, 75));
+            this.WithColor(Colors.Diary);
+            this.WithFooter("Quest Helper is only officially supported via Runelite. ETA's not provided.");
         }
     }
 }
