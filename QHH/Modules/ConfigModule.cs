@@ -5,8 +5,6 @@
     using System.Threading.Tasks;
     using Discord;
     using Discord.Commands;
-    using Discord.WebSocket;
-    using QHH.Common;
     using QHH.Data;
     using QHH.Utilities;
 
@@ -16,16 +14,12 @@
     public class ConfigModule : ModuleBase<SocketCommandContext>
     {
 
-        private readonly Servers servers;
-        private readonly Ranks ranks;
-        private readonly AutoRoles autoRoles;
         private readonly ServerHelper serverHelper;
+        private readonly DataAccessLayer dataAccessLayer;
 
-        public ConfigModule(Servers servers, Ranks ranks, AutoRoles autoRoles, ServerHelper serverHelper)
+        public ConfigModule(DataAccessLayer dataAccessLayer, ServerHelper serverHelper)
         {
-            this.servers = servers;
-            this.ranks = ranks;
-            this.autoRoles = autoRoles;
+            this.dataAccessLayer = dataAccessLayer;
             this.serverHelper = serverHelper;
         }
 
@@ -35,7 +29,7 @@
         {
             if (prefix == null)
             {
-                var guildPrefix = await this.servers.GetGuildPrefix(this.Context.Guild.Id) ?? "!";
+                var guildPrefix = await this.dataAccessLayer.GetGuildPrefix(this.Context.Guild.Id) ?? "!";
                 await this.ReplyAsync($"The current prefix of this bot is `{guildPrefix}`.");
                 return;
             }
@@ -46,9 +40,9 @@
                 return;
             }
 
-            await this.servers.ModifyGuildPrefix(this.Context.Guild.Id, prefix);
+            await this.dataAccessLayer.ModifyGuildPrefix(this.Context.Guild.Id, prefix);
             await this.ReplyAsync($"The prefix has been adjusted to `{prefix}`.");
-            await this.serverHelper.SendLogAsync(this.Context.Guild, "Prefix adjusted", $"{this.Context.User.Mention} modifed the prefix to `{prefix}`.");
+            await this.serverHelper.SendLogAsync(this.Context.Guild, "Prefix adjusted", $"{this.Context.User.Mention} modified the prefix to `{prefix}`.");
         }
 
         [Command("ranks", RunMode = RunMode.Async)]
@@ -99,7 +93,7 @@
                 return;
             }
 
-            await this.ranks.AddRankAsync(Context.Guild.Id, role.Id);
+            await this.dataAccessLayer.AddRankAsync(Context.Guild.Id, role.Id);
             await ReplyAsync($"The role {role.Mention} has been added to the ranks!");
         }
 
@@ -124,7 +118,7 @@
                 return;
             }
 
-            await this.ranks.RemoveRankAsync(Context.Guild.Id, role.Id);
+            await this.dataAccessLayer.RemoveRankAsync(Context.Guild.Id, role.Id);
             await ReplyAsync($"The role {role.Mention} has been removed from the ranks!");
         }
 
@@ -177,7 +171,7 @@
                 return;
             }
 
-            await this.autoRoles.AddAutoRoleAsync(this.Context.Guild.Id, role.Id);
+            await this.dataAccessLayer.AddAutoRoleAsync(this.Context.Guild.Id, role.Id);
             await ReplyAsync($"The role {role.Mention} has been added to the autoroles!");
         }
 
@@ -202,7 +196,7 @@
                 return;
             }
 
-            await this.autoRoles.RemoveAutoRoleAsync(Context.Guild.Id, role.Id);
+            await this.dataAccessLayer.RemoveAutoRoleAsync(Context.Guild.Id, role.Id);
             await ReplyAsync($"The role {role.Mention} has been removed from the autoroles!");
         }
 
@@ -212,14 +206,14 @@
         {
             if (args == "clear")
             {
-                await this.servers.ClearBackgroundImageAsync(Context.Guild.Id);
+                await this.dataAccessLayer.ClearBackgroundImageAsync(Context.Guild.Id);
                 await ReplyAsync("Successfully cleared the Quest Cape Image for this server, the backup image will be used instead.");
                 return;
             }
 
             if (args != null && args != "clear")
             {
-                await this.servers.ModifyBackgroundImageAsync(Context.Guild.Id, args);
+                await this.dataAccessLayer.ModifyBackgroundImageAsync(Context.Guild.Id, args);
                 await ReplyAsync($"Successfully modified the Quest Cape Image to {args}.");
                 return;
             }
@@ -231,7 +225,7 @@
         {
             if (option == null && value == null)
             {
-                var fetchedChannelId = await this.servers.GetWelcomeChannelAsync(Context.Guild.Id);
+                var fetchedChannelId = await this.dataAccessLayer.GetWelcomeChannelAsync(Context.Guild.Id);
                 if (fetchedChannelId == 0)
                 {
                     await ReplyAsync("There has not been set a welcome channel yet!");
@@ -242,11 +236,11 @@
                 if (fetchedChannel == null)
                 {
                     await ReplyAsync("There has not been set a welcome channel yet!");
-                    await this.servers.ClearWelcomeChannelAsync(Context.Guild.Id);
+                    await this.dataAccessLayer.ClearWelcomeChannelAsync(Context.Guild.Id);
                     return;
                 }
 
-                var fetchedBackground = await this.servers.GetBackgroundImageAsync(Context.Guild.Id);
+                var fetchedBackground = await this.dataAccessLayer.GetBackgroundImageAsync(Context.Guild.Id);
 
                 if (fetchedBackground != null)
                     await ReplyAsync($"The channel used for the welcome module is {fetchedChannel.Mention}.\nThe background is set to {fetchedBackground}.");
@@ -271,7 +265,7 @@
                     return;
                 }
 
-                await this.servers.ModifyWelcomeChannelAsync(Context.Guild.Id, parsedId);
+                await this.dataAccessLayer.ModifyWelcomeChannelAsync(Context.Guild.Id, parsedId);
                 await ReplyAsync($"Successfully modified the welcome channel to {parsedChannel.Mention}.");
                 return;
             }
@@ -285,7 +279,7 @@
         {
             if (value == null)
             {
-                var fetchedChannelId = await this.servers.GetLogsChannelAsync(Context.Guild.Id);
+                var fetchedChannelId = await this.dataAccessLayer.GetLogsChannelAsync(Context.Guild.Id);
                 if (fetchedChannelId == 0)
                 {
                     await ReplyAsync("There has not been set a logs channel yet!");
@@ -296,7 +290,7 @@
                 if (fetchedChannel == null)
                 {
                     await ReplyAsync("There has not been set a logs channel yet!");
-                    await this.servers.ClearLogsChannelAsync(Context.Guild.Id);
+                    await this.dataAccessLayer.ClearLogsChannelAsync(Context.Guild.Id);
                     return;
                 }
 
@@ -320,14 +314,14 @@
                     return;
                 }
 
-                await this.servers.ModifyLogsChannelAsync(Context.Guild.Id, parsedId);
+                await this.dataAccessLayer.ModifyLogsChannelAsync(Context.Guild.Id, parsedId);
                 await ReplyAsync($"Successfully modified the logs channel to {parsedChannel.Mention}.");
                 return;
             }
 
             if (value == "clear")
             {
-                await this.servers.ClearLogsChannelAsync(Context.Guild.Id);
+                await this.dataAccessLayer.ClearLogsChannelAsync(Context.Guild.Id);
                 await ReplyAsync("Successfully cleared the logs channel.");
                 return;
             }

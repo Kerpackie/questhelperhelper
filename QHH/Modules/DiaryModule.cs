@@ -1,27 +1,25 @@
-﻿using Discord;
-using Discord.Commands;
-using Discord.WebSocket;
-using QHH.Common;
-using QHH.Data;
-using QHH.Data.Context;
-using QHH.Data.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace QHH.Modules
+﻿namespace QHH.Modules
 {
-    public class DiaryModule : ModuleBase
-    {
-        //private readonly QHHDbContext context;
-        private readonly AchievementDiaries achievementDiaries;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Discord;
+    using Discord.Commands;
+    using Microsoft.Extensions.Configuration;
+    using QHH.Common;
+    using QHH.Data;
+    using QHH.Data.Models;
 
-        public DiaryModule(AchievementDiaries achievementDiaries)
+    public class DiaryModule : QHHModuleBase
+    {
+        private readonly DataAccessLayer dataAccessLayer;
+
+        public DiaryModule(IServiceProvider serviceProvider, IConfiguration configuration, DataAccessLayer dataAccessLayer)
+            : base(serviceProvider, configuration)
         {
-            //this.context = context;
-            this.achievementDiaries = achievementDiaries;
+            this.dataAccessLayer = dataAccessLayer;
         }
 
         [Command("diaries", RunMode = RunMode.Async)]
@@ -29,7 +27,7 @@ namespace QHH.Modules
         {
             await Context.Channel.TriggerTypingAsync();
 
-            var diaries = await this.achievementDiaries.GetAchievementDiaries();
+            var diaries = await this.dataAccessLayer.GetAchievementDiaries();
             if (diaries != null)
             {
                 var diaryListEmbedBuilder = new DiaryEmbedBuilder()
@@ -71,7 +69,7 @@ namespace QHH.Modules
                     }
                 }
 
-                await Context.Channel.SendMessageAsync("", false, diaryListEmbedBuilder.Build()); 
+                await Context.Channel.SendMessageAsync(null, false, diaryListEmbedBuilder.Build());
             }
             else
             {
@@ -83,7 +81,7 @@ namespace QHH.Modules
         }
 
         [Command("adddiary", RunMode = RunMode.Async)]
-        [RequireUserPermission(GuildPermission.Administrator)]
+        [RequireUserPermission(ChannelPermission.ManageChannels)]
         public async Task AddDiary([Remainder] string name)
         {
             var reactions = new List<Emoji>();
@@ -93,12 +91,22 @@ namespace QHH.Modules
             reactions.Add(new Emoji("\uD83D\uDFE2"));
 
             await Context.Channel.TriggerTypingAsync();
-            var diaries = await this.achievementDiaries.GetAchievementDiaries();
+            var diaries = await this.dataAccessLayer.GetAchievementDiaries();
 
+            if (diaries == null)
+            {
+                var embedError = new QHHEmbedBuilder()
+                    .WithDescription("That Achievement Diary RETURNING NULL!")
+                    .WithStyle(EmbedStyle.Error)
+                    .Build();
+                await Context.Channel.SendMessageAsync(embed: embedError);
+                return;
+            }
             if (diaries.Any(x => x.DiaryName == name))
             {
-                var embedError = new ErrorEmbedBuilder()
+                var embedError = new QHHEmbedBuilder()
                     .WithDescription("That Achievement Diary already exists!")
+                    .WithStyle(EmbedStyle.Error)
                     .Build();
                 await Context.Channel.SendMessageAsync(embed: embedError);
                 return;
@@ -111,26 +119,27 @@ namespace QHH.Modules
                 .AppendLine("You can use the emotes below to adjust the status of the Diary. The comment will not update with the current status, so you may need to run the !diaries command to ensure that it updated successfully. ");
 
             var embed = new AddDiaryEmbedBuilder()
-                .WithTitle($"{name} Diary Status Control Panel")
+                .WithTitle($"{name} Achievement Diary Status Control Panel")
                 .WithDescription(description.ToString())
                 .AddField("Diary Added By:", $"{Context.User.Username}")
                 .WithCurrentTimestamp()
                 .Build();
 
             var message = await Context.Channel.SendMessageAsync(embed: embed);
+            await this.dataAccessLayer.CreateAchievementDiary(Context.User.Id, message.Id, name);
 
             await message.AddReactionsAsync(reactions.ToArray());
 
-            await this.achievementDiaries.CreateAchievementDiary(Context.User.Id, message.Id, name);
+            //await this.dataAccessLayer.CreateAchievementDiary(Context.User.Id, message.Id, name);
             //await ReplyAsync($"The diary {name} has been added to the DB by {Context.User}!");
         }
 
-        [Command("deldiary", RunMode = RunMode.Async)]
-        [RequireUserPermission(GuildPermission.Administrator)]
+        [Command("DelDiary", RunMode = RunMode.Async)]
+        [RequireUserPermission(ChannelPermission.ManageChannels)]
         public async Task DelDiary([Remainder] string name)
         {
             await Context.Channel.TriggerTypingAsync();
-            var diaries = await this.achievementDiaries.GetAchievementDiaries();
+            var diaries = await this.dataAccessLayer.GetAchievementDiaries();
 
             if (diaries.Any(x => x.DiaryName == name))
             {
@@ -138,19 +147,20 @@ namespace QHH.Modules
                     .WithDescription($"Successfully deleted the Achievement Diary: `{name}`")
                     .Build();
 
-                await this.achievementDiaries.DeleteAchievementDiary(name);
+                await this.dataAccessLayer.DeleteAchievementDiary(name);
                 await Context.Channel.SendMessageAsync(embed: embedSuccess);
                 return;
             }
 
-            var embedError = new ErrorEmbedBuilder()
-                .WithDescription($"Diary: `{name}` not deleted! Is it a valid diary or have you spelt it correctly?")
+            var embedError = new QHHEmbedBuilder()
+                .WithDescription($"Diary: `{name}` not deleted! Is it a valid diary or have you spelled it correctly?")
+                .WithStyle(EmbedStyle.Error)
                 .Build();
             await Context.Channel.SendMessageAsync(embed: embedError);
         }
 
-        [Command("editdiaryname", RunMode = RunMode.Async)]
-        [RequireUserPermission(GuildPermission.Administrator)]
+        [Command("editdiaryname")]
+        [RequireUserPermission(ChannelPermission.ManageChannels)]
         public async Task EditDiaryName(string name = null, [Remainder] string args = null)
         {
             if (name == null && args == null)
@@ -174,7 +184,7 @@ namespace QHH.Modules
             }
             else
             {
-                await this.achievementDiaries.ModifyAchievementDiaryName(name, args);
+                await this.dataAccessLayer.ModifyAchievementDiaryName(name, args);
                 var embedSuccess = new DiaryEmbedBuilder()
                     .WithDescription($"Diary: `{name}` has been renamed to `{args}`")
                     .Build();

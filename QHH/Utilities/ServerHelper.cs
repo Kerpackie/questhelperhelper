@@ -1,9 +1,7 @@
 ﻿namespace QHH.Utilities
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
     using Discord;
     using Discord.WebSocket;
@@ -13,27 +11,23 @@
 
     public class ServerHelper
     {
-        private readonly Servers servers;
-        private readonly Ranks ranks;
-        private readonly AutoRoles autoroles;
+        private readonly DataAccessLayer dataAccessLayer;
 
-        public ServerHelper(Servers servers, Ranks ranks, AutoRoles autoRoles)
+        public ServerHelper(DataAccessLayer dataAccessLayer)
         {
-            this.servers = servers;
-            this.ranks = ranks;
-            this.autoroles = autoRoles;
+            this.dataAccessLayer = dataAccessLayer;
         }
 
         public async Task SendLogAsync(IGuild guild, string title, string description)
         {
-            var channelId = await this.servers.GetLogsChannelAsync(guild.Id);
+            var channelId = await this.dataAccessLayer.GetLogsChannelAsync(guild.Id);
             if (channelId == 0)
                 return;
 
             var fetchedChannel = await guild.GetTextChannelAsync(channelId);
             if (fetchedChannel == null)
             {
-                await this.servers.ClearLogsChannelAsync(guild.Id);
+                await this.dataAccessLayer.ClearLogsChannelAsync(guild.Id);
                 return;
             }
 
@@ -45,7 +39,7 @@
             var roles = new List<IRole>();
             var invalidRanks = new List<Rank>();
 
-            var ranks = await this.ranks.GetRanksAsync(guild.Id);
+            var ranks = await this.dataAccessLayer.GetRanksAsync(guild.Id);
 
             foreach (var rank in ranks)
             {
@@ -67,7 +61,7 @@
             }
 
             if (invalidRanks.Count > 0)
-                await this.ranks.ClearRanksAsync(invalidRanks);
+                await this.dataAccessLayer.ClearRanksAsync(invalidRanks);
 
             return roles;
         }
@@ -77,7 +71,7 @@
             var roles = new List<IRole>();
             var invalidAutoRoles = new List<AutoRole>();
 
-            var autoRoles = await this.autoroles.GetAutoRolesAsync(guild.Id);
+            var autoRoles = await this.dataAccessLayer.GetAutoRolesAsync(guild.Id);
 
             foreach (var autoRole in autoRoles)
             {
@@ -99,7 +93,7 @@
             }
 
             if (invalidAutoRoles.Count > 0)
-                await this.autoroles.ClearAutoRolesAsync(invalidAutoRoles);
+                await this.dataAccessLayer.ClearAutoRolesAsync(invalidAutoRoles);
 
             return roles;
         }

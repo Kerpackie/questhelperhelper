@@ -11,6 +11,7 @@
         private string title;
         private string description;
         private string footer;
+        private string thumbnail;
         private string image;
         private EmbedStyle style;
 
@@ -83,6 +84,23 @@
         }
 
         /// <summary>
+        /// Gets or sets and thumbnail if it is included in the embed.
+        /// </summary>
+        public string Thumbnail
+        {
+            get => this.Thumbnail;
+            set
+            {
+                if (value?.Length > 256)
+                {
+                    throw new ArgumentException(message: $"Image URL must be less than or equal to 256.", paramName: nameof(this.Title));
+                }
+
+                this.thumbnail = value;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the <see cref="EmbedStyle"/> of the embed.
         /// </summary>
         public EmbedStyle Style
@@ -139,6 +157,17 @@
         }
 
         /// <summary>
+        /// Attach an thumbnail to the embed.
+        /// </summary>
+        /// <param name="thumbnail">The thumbnail attached to the embed.</param>
+        /// <returns>A <see cref="QHHEmbedBuilder"/> with an attached thumbnail.</returns>
+        public QHHEmbedBuilder WithThumbnail(string thumbnail)
+        {
+            this.Thumbnail = thumbnail;
+            return this;
+        }
+
+        /// <summary>
         /// Attach an <see cref="EmbedStyle"/> to the embed.
         /// </summary>
         /// <param name="style">The <see cref="EmbedStyle"/> of the embed.</param>
@@ -157,6 +186,8 @@
         {
             EmbedBuilder builder = new EmbedBuilder()
                 .WithDescription(this.description)
+                .WithThumbnailUrl(this.thumbnail)
+                .WithImageUrl(this.image)
                 .WithFooter(this.footer);
 
             switch (this.style)
@@ -197,7 +228,6 @@
                 case EmbedStyle.Image:
                     builder
                         .WithTitle(this.title)
-                        .WithImageUrl(this.image)
                         .WithColor(Colors.Quest);
                     break;
             }

@@ -1,15 +1,11 @@
-﻿using Discord.Commands;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using QHH.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace QHH.Modules
+﻿namespace QHH.Modules
 {
+    using System;
+    using Discord.Commands;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using QHH.Data;
+
     public abstract class QHHModuleBase : ModuleBase<SocketCommandContext>
     {
         public readonly DataAccessLayer DataAccessLayer;

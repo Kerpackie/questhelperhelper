@@ -1,4 +1,7 @@
-﻿namespace QHH
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+
+namespace QHH
 {
     using System.IO;
     using System.Threading.Tasks;
@@ -59,13 +62,10 @@
                     services
                         .AddHostedService<CommandHandler>()
                         .AddDbContext<QHHDbContext>()
+                        .AddSingleton<HandlerService>()
                         .AddSingleton<DataAccessLayer>()
-                        .AddSingleton<Servers>()
                         .AddSingleton<ServerHelper>()
-                        .AddSingleton<Images>()
-                        .AddSingleton<Ranks>()
-                        .AddSingleton<AutoRoles>()
-                        .AddSingleton<AchievementDiaries>();
+                        .AddSingleton<Images>();
                 })
                 .UseConsoleLifetime();
 

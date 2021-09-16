@@ -1,16 +1,14 @@
-﻿using Discord;
-using Discord.Commands;
-using Discord.WebSocket;
-using Microsoft.Extensions.Configuration;
-using QHH.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace QHH.Modules
+﻿namespace QHH.Modules
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Discord;
+    using Discord.Commands;
+    using Discord.WebSocket;
+    using Microsoft.Extensions.Configuration;
+    using QHH.Common;
+
     [Name("FAQs")]
     public class FAQModule : QHHModuleBase
     {
@@ -18,6 +16,24 @@ namespace QHH.Modules
             : base(serviceProvider, configuration)
         {
 
+        }
+
+        [Command("install")]
+        [Alias("howtoinstall", "howdoiinstall")]
+        public async Task HowToInstall()
+        {
+            var builder = new QHHEmbedBuilder()
+                .WithThumbnail(Context.Client.CurrentUser.GetAvatarUrl() ?? Context.Guild.IconUrl)
+                .WithTitle("How to install Quest Helper")
+                .WithDescription(
+                    "Open runelite, and click on the gear for 'Configuration'. Next, select the 'Plugin Hub' at the bottom of the list. " +
+                    "Type 'Quest Helper' into the search bar, verify that it is by Zoinkwiz, and press install.")
+                .WithStyle(EmbedStyle.Information)
+                //How to install image URL (thanks discord for the long term image hosting!): https://cdn.discordapp.com/attachments/854379120624271380/881180710151532654/Howtoinstall.jpg 
+                .WithImage(
+                    "https://cdn.discordapp.com/attachments/854379120624271380/881180710151532654/Howtoinstall.jpg");
+            var embed = builder.Build();
+            await Context.Channel.SendMessageAsync(null, false, embed);
         }
 
         [Command("faqs", RunMode = RunMode.Async)]
@@ -242,7 +258,7 @@ namespace QHH.Modules
 
                     var deleted = new QHHEmbedBuilder()
                         .WithTitle("FAQ Deleted!")
-                        .WithDescription("The FAQ was successfully delted.")
+                        .WithDescription("The FAQ was successfully deleted.")
                         .WithStyle(EmbedStyle.Success)
                         .Build();
 

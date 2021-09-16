@@ -26,9 +26,10 @@
         private readonly CommandService service;
         private readonly IConfiguration configuration;
         private readonly ServerHelper serverHelper;
-        private readonly Servers servers;
+        //private readonly Servers servers;
         private readonly Images images;
         private readonly QHHDbContext context;
+        private readonly DataAccessLayer dataAccessLayer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandHandler"/> class.
@@ -37,14 +38,14 @@
         /// <param name="client">The <see cref="DiscordSocketClient"/> that should be injected.</param>
         /// <param name="service">The <see cref="CommandService"/> that should be injected.</param>
         /// <param name="configuration">The <see cref="IConfiguration"/> that should be injected.</param>
-        public CommandHandler(IServiceProvider provider, DiscordSocketClient client, CommandService service, IConfiguration configuration, ServerHelper serverHelper, Servers servers, Images images, QHHDbContext context)
+        public CommandHandler(IServiceProvider provider, DiscordSocketClient client, CommandService service, IConfiguration configuration, DataAccessLayer dataAccessLayer, ServerHelper serverHelper, Images images, QHHDbContext context)
         {
             this.provider = provider;
             this.client = client;
             this.service = service;
             this.configuration = configuration;
             this.serverHelper = serverHelper;
-            this.servers = servers;
+            this.dataAccessLayer = dataAccessLayer;
             this.images = images;
             this.context = context;
         }
@@ -145,7 +146,7 @@
             }
 
             var argPos = 0;
-            var prefix = await this.servers.GetGuildPrefix((message.Channel as SocketGuildChannel).Guild.Id) ?? "!";
+            var prefix = await this.dataAccessLayer.GetGuildPrefix((message.Channel as SocketGuildChannel).Guild.Id) ?? "!";
 
             if (!message.HasStringPrefix(prefix, ref argPos) && !message.HasMentionPrefix(this.client.CurrentUser, ref argPos))
             {
