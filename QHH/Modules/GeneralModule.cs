@@ -6,7 +6,6 @@ namespace QHH.Modules
     using System.Threading.Tasks;
     using Discord.Commands;
     using Discord.WebSocket;
-    using QHH.Data;
     using QHH.Utilities;
 
     /// <summary>

@@ -12,10 +12,18 @@
     using QHH.Data;
     using QHH.Data.Models;
 
+    [Name("Achievement Diaries")]
+    /// The achievement diary module.
     public class DiaryModule : QHHModuleBase
     {
         private readonly DataAccessLayer dataAccessLayer;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DiaryModule"/> class.
+        /// </summary>
+        /// <param name="serviceProvider">service Provider DI</param>
+        /// <param name="configuration">Config DI</param>
+        /// <param name="dataAccessLayer">DAL DI</param>
         public DiaryModule(IServiceProvider serviceProvider, IConfiguration configuration, DataAccessLayer dataAccessLayer)
             : base(serviceProvider, configuration)
         {

@@ -9,7 +9,13 @@
 
     public class Images
     {
-        public async Task<String> CreateQuestCapeImageAsync(SocketGuildUser user, string url = "https://cdn.discordapp.com/attachments/854379120624271380/886730785049161758/3lJqsAX.jpeg")
+        /// <summary>
+        /// Creates the Quest Cape Reward image.
+        /// </summary>
+        /// <param name="user">User who the image should be targeted at.</param>
+        /// <param name="url">URL to use </param>
+        /// <returns>An image that gets uploaded to a channel that the command is run in.</returns>
+        public async Task<string> CreateQuestCapeImageAsync(SocketGuildUser user, string url = "https://cdn.discordapp.com/attachments/854379120624271380/886730785049161758/3lJqsAX.jpeg")
         {
             var avatar = await FetchImageAsync(user.GetAvatarUrl(size: 2048, format: Discord.ImageFormat.Png) ?? user.GetDefaultAvatarUrl());
             var background = await FetchImageAsync(url);
@@ -29,6 +35,11 @@
             return await Task.FromResult(path);
         }
 
+        /// <summary>
+        /// Crops the supplied image down to the banner size required.
+        /// </summary>
+        /// <param name="image">Image to be cropped.</param>
+        /// <returns>A cropped image to be used in other functions.</returns>
         private static Bitmap CropToBanner(Image image)
         {
             var originalWidth = image.Width;
@@ -57,6 +68,11 @@
             return bitmap;
         }
 
+        /// <summary>
+        /// Clips the avatar image to a circle to be applied to the middle of the image.
+        /// </summary>
+        /// <param name="image">User or Default Avatar</param>
+        /// <returns>A circular image of the users avatar.</returns>
         private Image ClipImageToCircle(Image image)
         {
             Image destination = new Bitmap(image.Width, image.Height, image.PixelFormat);
@@ -66,13 +82,12 @@
 
             using Graphics g = Graphics.FromImage(destination);
             var r = new Rectangle(x - radius, y - radius, radius * 2, radius * 2);
-
             g.InterpolationMode = InterpolationMode.HighQualityBicubic;
             g.CompositingQuality = CompositingQuality.HighQuality;
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
-            using (Brush brush = new SolidBrush(Color.Transparent))
+            using (Brush brush = new SolidBrush(Color.Tomato))
             {
                 g.FillRectangle(brush, 0, 0, destination.Width, destination.Height);
             }
@@ -81,10 +96,15 @@
             path.AddEllipse(r);
             g.SetClip(path);
             g.DrawImage(image, 0, 0);
-
             return destination;
         }
 
+        /// <summary>
+        /// Copy avatar to image
+        /// </summary>
+        /// <param name="source">Source image</param>
+        /// <param name="destination">destination image</param>
+        /// <returns>Image with avatar applied.</returns>
         private Image CopyRegionIntoImage(Image source, Image destination)
         {
             using var drD = Graphics.FromImage(destination);
@@ -96,6 +116,13 @@
             return destination;
         }
 
+        /// <summary>
+        /// Writes the text onto the image.
+        /// </summary>
+        /// <param name="image">Image to be written on</param>
+        /// <param name="header">Header text</param>
+        /// <param name="subheader">Sub Text</param>
+        /// <returns>Image with text written on it</returns>
         private Image DrawTextToImage(Image image, string header, string subheader)
         {
             var roboto = new Font("Roboto", 30, FontStyle.Regular);
@@ -125,6 +152,11 @@
             return img;
         }
 
+        /// <summary>
+        /// Gets the image from the URL 
+        /// </summary>
+        /// <param name="url">URL To be fetched</param>
+        /// <returns>A downloaded image to be used as the basis for the image generator.</returns>
         private async Task<Image> FetchImageAsync(string url)
         {
             var client = new HttpClient();

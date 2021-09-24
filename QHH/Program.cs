@@ -1,7 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-
-namespace QHH
+﻿namespace QHH
 {
     using System.IO;
     using System.Threading.Tasks;

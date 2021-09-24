@@ -9,9 +9,17 @@
     using Microsoft.Extensions.Configuration;
     using QHH.Common;
 
+    /// <summary>
+    /// the FAQ module
+    /// </summary>
     [Name("FAQs")]
     public class FAQModule : QHHModuleBase
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FAQModule"/> class.
+        /// </summary>
+        /// <param name="serviceProvider">The service provider for DI</param>
+        /// <param name="configuration">the configuration file for DI</param>
         public FAQModule(IServiceProvider serviceProvider, IConfiguration configuration)
             : base(serviceProvider, configuration)
         {
@@ -216,7 +224,7 @@
                     }
 
                     await this.DataAccessLayer.EditFAQOwner(arguments[1], userId);
-                    
+
                     var success = new QHHEmbedBuilder()
                         .WithTitle("FAQ Ownership Transferred")
                         .WithDescription($"The ownership of the tag has been transferred to <@{userId}>.")

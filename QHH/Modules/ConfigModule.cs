@@ -9,7 +9,7 @@
     using QHH.Utilities;
 
     /// <summary>
-    /// The general module containing commands like ping.
+    /// The config module containing commands such as Prefix Management.
     /// </summary>
     public class ConfigModule : ModuleBase<SocketCommandContext>
     {

@@ -3,3 +3,6 @@ QHH/obj
 QHH/logs
 QHH/properties
 *.json
+.vs/QHH/v16/.suo
+.vs/QHH/config/applicationhost.config
+.vs/QHH/DesignTimeBuild/.dtbcache.v2

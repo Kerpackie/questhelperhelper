@@ -7,15 +7,26 @@
     using QHH.Data.Context;
     using QHH.Data.Models;
 
+    /// <summary>
+    /// The business layer of accessing the database.
+    /// </summary>
     public class DataAccessLayer
     {
         private readonly QHHDbContext dbContext;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DataAccessLayer"/> class.
+        /// </summary>
+        /// <param name="dbContext">the database context required.</param>
         public DataAccessLayer(QHHDbContext dbContext)
         {
             this.dbContext = dbContext;
         }
 
+        /// <summary>
+        /// Gets achievement diaries by name.
+        /// </summary>
+        /// <returns>a list of achievement diaries.</returns>
         public async Task<IEnumerable<AchievementDiary>> GetAchievementDiaries()
         {
             return await this.dbContext.AchievementDiaries
@@ -37,6 +48,13 @@
                 .FirstOrDefaultAsync();
         }
 
+        /// <summary>
+        /// Creates a new achievement diary.
+        /// </summary>
+        /// <param name="initiator">User who created the diary.</param>
+        /// <param name="messageId">Message used to control the diary status.</param>
+        /// <param name="diaryName">Name of the diary.</param>
+        /// <returns>Creates a new diary and writes it to the database.</returns>
         public async Task CreateAchievementDiary(ulong initiator, ulong messageId, string diaryName)
         {
             var entityEntry = this.dbContext.Add(new AchievementDiary
@@ -49,6 +67,12 @@
             await this.dbContext.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Updates the status of an achievement diary
+        /// </summary>
+        /// <param name="id">ID of the diary to be updated.</param>
+        /// <param name="status">Status of the diary to be updated.</param>
+        /// <returns>An updated diary.</returns>
         public async Task UpdateAchievementDiaryStatus(int id, DevelopmentStatus status)
         {
             var diary = await this.dbContext.AchievementDiaries
@@ -63,6 +87,11 @@
             await this.dbContext.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Deletes an Achievement Diary.
+        /// </summary>
+        /// <param name="name">Name of the diary to be deleted.</param>
+        /// <returns>Nothing, its gone. Poof.</returns>
         public async Task DeleteAchievementDiary(string name)
         {
             var diary = await this.dbContext.AchievementDiaries
